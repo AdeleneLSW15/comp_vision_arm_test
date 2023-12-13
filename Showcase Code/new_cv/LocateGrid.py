@@ -17,6 +17,16 @@ def _ConvertToBinary(boardImg):
     #255/2, 255
     kernel = np.ones((5,5),np.uint8)
     opening = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
+    
+     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    #implementig adaptive thresholding
+    # perform adaptive thresholding again, this time using a Gaussian
+    # weighting versus a simple mean to compute our local threshold
+    # value
+    
+    thresh = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 21, 5)
+    cv2.imshow("Gaussian Adaptive Thresholding", thresh)
+
 
     return opening
 
