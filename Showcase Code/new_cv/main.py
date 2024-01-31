@@ -1,6 +1,7 @@
 import cv2
 import os
 import time
+import numpy as np
 
 from Cropping import ExtractAndStraightenFromImage
 from LocateGrid import DetectGrid
@@ -30,12 +31,14 @@ while True:
 
     boardImg = ExtractAndStraightenFromImage(frame)
     checkBoard = DetectGrid(boardImg)
-    adapt_img = adaptive_thresh(boardImg) 
+    adapt_img = cv2.rotate(adaptive_thresh(boardImg), cv2.ROTATE_90_COUNTERCLOCKWISE)
     morphImg = morph_gradient(boardImg)
     bitResult = bit_masking_grad(morphImg, boardImg)
 
+
     cv2.imshow("Frame", frame)
     #cv2.imshow("Board img", boardImg)
+
     cv2.imshow("Check board", checkBoard)
     cv2.imshow("Adaptive Thres Method", adapt_img)
     cv2.imshow("Bit Result", bitResult)
