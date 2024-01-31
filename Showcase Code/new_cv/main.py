@@ -15,7 +15,7 @@ IMAGE_FILE_PATH = os.path.join("Capture", "BoardPictures")
 if not os.path.exists(IMAGE_FILE_PATH):
     os.makedirs(IMAGE_FILE_PATH)
 
-# Start the video capture
+# Start the video capture.
 vid = cv2.VideoCapture(0)  # ID 1 assumes a second camera (like your Orbbec Astra). Use 0 for default camera
 
 is_automatic = False
