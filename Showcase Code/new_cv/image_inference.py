@@ -20,7 +20,7 @@ vid = cv2.VideoCapture(0)  # ID 1 assumes a second camera (like your Orbbec Astr
 
 is_automatic = False
 count = 0
-def screenshot(path_output_dir, img_to_take):
+def screenshot(img_to_take):
     global count
     # extract frames from a video and save to directory as 'x.png' where 
     # x is the frame index
@@ -29,7 +29,7 @@ def screenshot(path_output_dir, img_to_take):
     if cv2.waitKey(1) & 0xFF == ord('v'):
         #print("C - capture image")
         #print(os.path.join(os.getcwd(), path_output_dir, f'{count}.png'))
-        cv2.imwrite(os.path.join(os.getcwd(), path_output_dir, f'{count}.png'), img_to_take)
+        cv2.imwrite(os.path.join(os.getcwd(), 'image_capture', f'{count}.png'), img_to_take)
         count += 1
     # cv2.destroyAllWindows()
     # vid.release()
@@ -48,10 +48,41 @@ while True:
     morphImg = morph_gradient(boardImg)
     bitResult = bit_masking_grad(morphImg, boardImg)
 
-    screenshot('image_capture', adapted_feed)
+    screenshot(checkBoard)
     # ------------------------------------------------------
 
-    """img = cv2.imread('shapes.jpg')
+    #simple rectangle detection doesn't work well - try Harris Corner Detection + Denoising from light
+    if os.path.exists(os.path.join(os.getcwd(), 'image_capture', '0.png')):
+
+        inference_img = cv2.imread(os.path.join(os.getcwd(), 'image_capture', '0.png'))
+        gray = cv2.cvtColor(inference_img, cv2.COLOR_BGR2GRAY)
+        gray = np.float32(gray)
+        dst = cv2.cornerHarris(gray,2,5,0.06)
+        dst = cv2.dilate(dst,None)
+        #ret,thresh = cv2.threshold(gray,50,255,0)
+        #contours,hierarchy = cv2.findContours(thresh, 1, 2)
+        #print("Number of contours detected:", len(contours))  
+
+        # Threshold for an optimal value, it may vary depending on the image.
+        print("Print number of corner %d", inference_img.shape)
+        inference_img[dst>0.01*dst.max()]=[0,0,255]
+        cv2.imshow("Inference", inference_img)
+
+    """
+    filename = 'chessboard.png'
+img = cv.imread(filename)
+gray = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
+gray = np.float32(gray)
+dst = cv.cornerHarris(gray,2,3,0.04)
+#result is dilated for marking the corners, not important
+dst = cv.dilate(dst,None)
+# Threshold for an optimal value, it may vary depending on the image.
+img[dst>0.01*dst.max()]=[0,0,255]
+cv.imshow('dst',img)
+if cv.waitKey(0) & 0xff == 27:
+    cv.destroyAllWindows()
+    
+    img = cv2.imread('shapes.jpg')
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     ret,thresh = cv2.threshold(gray,50,255,0)
     contours,hierarchy = cv2.findContours(thresh, 1, 2)
@@ -87,6 +118,8 @@ while True:
 
     if key & 0xFF == ord('q'):
         break
+
+
             
 
 vid.release()
